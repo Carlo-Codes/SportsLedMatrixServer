@@ -44,7 +44,7 @@ app.listen(port, () => {
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/public/test.html'));
+  res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
 app.post('/sendText', (req, res) => {
