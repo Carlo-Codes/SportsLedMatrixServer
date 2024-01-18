@@ -1,6 +1,7 @@
-import net, { Socket } from 'net'
+/* import net, { Socket } from 'net'
 
 export let sockets:Socket[] = []
+
 
 
 export const TCPserver = net.createServer((socket:Socket) => {
@@ -28,6 +29,9 @@ TCPserver.on('error', (err:unknown) => {
 })
 
 
+
+
+
 // telnet localhost 3001
 
 
@@ -52,4 +56,4 @@ const server = net.createServer((socket) => {
 server.listen(serverPort, () => {
   console.log(`TCP server listening on port ${serverPort}`);
 });
- */
+ */ 
