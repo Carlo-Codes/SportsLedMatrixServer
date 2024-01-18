@@ -3,6 +3,8 @@ import express, { Response, Request } from 'express';
 import * as path from 'path';
 import bodyParser from 'body-parser';
 import {stringToHex} from './utils/utils'
+import net from 'net'
+
 
 const port = 3000;
 
@@ -19,13 +21,14 @@ const data = scrollingStartHex + testdata + endHex;
 
 
 
-/* const tcpClient = net.createConnection(displayboard.port, displayboard.host)
+const tcpClient = net.createConnection(displayboard.port, displayboard.host)
 tcpClient.on('connect',()=>{
   console.log('connected to display')
-  tcpClient.write(rawHex)
-  console.log(rawHex)
-  
-}) */
+})
+
+tcpClient.on('error', ()=>{
+  console.log('error')
+})
 
 const app = express();
 
@@ -53,6 +56,6 @@ app.post('/sendText', (req, res) => {
   const hex = scrollingStartHex + textToHex + endHex
   const rawHex = Buffer.from(hex, 'hex')
   console.log(rawHex)
-  //tcpClient.write(rawHex)
+  tcpClient.write(rawHex)
   res.status(200).send('Data received successfully');
 });
