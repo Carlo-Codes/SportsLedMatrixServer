@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 
 interface match extends Object{
   strStatus:string
+  strTimestamp:string
 }
 
 interface matchesByMatchWeek{
@@ -35,16 +36,20 @@ export class FootballApi{
 
   async init(){
     try {
-      this.allMatches = await this.readMatchesFromServer()
+      await this.readMatchesFromServer().then((resolve)=>{
+        this.update()
+        this.setMatchWeek(21)//get this from api
+      })
       if(!this.allMatches){
-        this.getAndSaveMatchesToServer()
-      }  
+        await this.getAndSaveMatchesToServer()
+      }
     } catch (error:unknown) {
       if(error instanceof Error){
         console.log(error)
       }
     }
   }
+
 
   private async getMatchesByMatchWeek(){
     try {
@@ -80,16 +85,17 @@ export class FootballApi{
   
   }
   
-  async getAndSaveMatchesToServer(){
+  async getAndSaveMatchesToServer(callback:()=>void = ()=>{null}){
     await this.getMatchesByMatchWeek();
     await this.saveMatchesToFile();
+    callback
   }
   
   async readMatchesFromServer(){
     try {
       const data = await fs.readFile(this.allMatchesFilePath, {encoding:"utf-8"})
-      const json = JSON.parse(data)
-      return json as MatchWeekMatches[]
+      const json = await JSON.parse(data)
+      this.allMatches =  json as MatchWeekMatches[]
       } catch (error:unknown) {
         if(error instanceof Error){
           console.log(error)
@@ -97,30 +103,45 @@ export class FootballApi{
       }
   }
 
-  async update(){
-    this.date = Date.now();
-    this.calculateCurrentGameWeek();
-  }
 
-  calculateCurrentGameWeek(){
+  setMatchWeek(weekN: number){
+    this.currentMatchWeek = weekN;
+  }
+  calculateCurrentGameWeek(){ //this is POINTLESS!!! just pay for api
     if(this.allMatches){
-      for(let i = 1; i <= this.allMatches?.length; i++){ //"strStatus": "Not Started"
+      for(let i = 0; i < this.allMatches?.length; i++){ //"strStatus": "Not Started"
         for(let j = 0; j < this.allMatches[i].matches.length; j++){
-          if(this.allMatches[i].matches[j].strStatus !== "Not Started"){
+          const tempMatch = this.allMatches[i].matches[j];
+          if(tempMatch.strStatus !== "Not Started"){
             if(!this.nextMatch){
-              this.nextMatch = this.allMatches[i].matches[j]
+              this.nextMatch = tempMatch
             }else{
-              const currentnextMatchDate = new Date(this.nextMatch.strStatus).valueOf()
-              const newNextMatchDate = new Date(this.allMatches[i].matches[j].strStatus).valueOf()
+              const currentnextMatchDate = new Date(this.nextMatch.strTimestamp).valueOf()
+              const newNextMatchDate = new Date(tempMatch.strTimestamp).valueOf()
               if(newNextMatchDate>currentnextMatchDate){
-                this.nextMatch = this.nextMatch = this.allMatches[i].matches[j]
-                this.currentMatchWeek = i
+
+                this.nextMatch = tempMatch
+                this.currentMatchWeek = this.allMatches[i].matchWeek
               }
             }
           }
         }
       }  
     }
+    console.log(this.nextMatch)
+  }
+
+  getCurrentWeekMatches(){
+    
+  }
+
+  formatResults(){
+
+  }
+
+  update(){
+    this.date = Date.now();
+    //this.calculateCurrentGameWeek()
   }
 
 

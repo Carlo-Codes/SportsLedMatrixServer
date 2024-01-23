@@ -18,7 +18,9 @@ const scrollingStartHex = `015A303002410F45544141060A49310A4F31`;
 const endHex = '04';
 const testdata = '61616161';
 
-const football = new FootballApi();
+let football = new FootballApi();
+football.init();
+
 
 
 const tcpClient = net.createConnection(displayboard.port, displayboard.host)
@@ -44,8 +46,7 @@ app.use(function (req: Request, res: Response, next: Function) {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
-  football.init();
-  football.update();
+
 });
 
 app.get('/', (req, res) => {
