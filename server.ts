@@ -4,12 +4,13 @@ import * as path from 'path';
 import bodyParser from 'body-parser';
 import {stringToHex} from './utils/utils'
 import net from 'net'
+import { FootballApi } from './src/sportApi/footballApi';
 
 
 const port = 3000;
 
 const displayboard = {
-  host: '192.168.1.111',
+  host: '192.168.1.134',
   port: 9520
 };
 
@@ -17,8 +18,7 @@ const scrollingStartHex = `015A303002410F45544141060A49310A4F31`;
 const endHex = '04';
 const testdata = '61616161';
 
-const data = scrollingStartHex + testdata + endHex;
-
+const football = new FootballApi();
 
 
 const tcpClient = net.createConnection(displayboard.port, displayboard.host)
@@ -44,6 +44,8 @@ app.use(function (req: Request, res: Response, next: Function) {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+  football.init();
+  football.update();
 });
 
 app.get('/', (req, res) => {
