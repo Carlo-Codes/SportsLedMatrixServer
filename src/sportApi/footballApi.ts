@@ -132,11 +132,17 @@ export class FootballApi{
   }
 
   getCurrentWeekMatches(){
-    
+    const matches = this.allMatches?.filter((week)=>{
+      week.matchWeek === this.currentMatchWeek
+    })[0]
+
+
   }
 
-  formatResults(){
-
+  formatResults(week:match){// here
+    const homeTeam
+    const awayTeam
+    const score
   }
 
   update(){
