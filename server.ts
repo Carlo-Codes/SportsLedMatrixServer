@@ -14,8 +14,7 @@ const displayboard = {
   port: 9520
 };
 
-const scrollingStartHex = `015A303002410F45544141060A49310A4F31`;
-const endHex = '04';
+
 const testdata = '61616161';
 
 let football = new FootballApi();
@@ -55,9 +54,7 @@ app.get('/', (req, res) => {
 
 app.post('/sendText', (req, res) => {
   const text = req.body as string;
-  const textToHex = stringToHex(text)
-  const hex = scrollingStartHex + textToHex + endHex
-  const rawHex = Buffer.from(hex, 'hex')
+
   console.log(rawHex)
   tcpClient.write(rawHex)
   res.status(200).send('Data received successfully');
