@@ -1,4 +1,4 @@
-class MatrixParser{
+export class MatrixParser{
     _textToParse = ''
     _hexToSend:Buffer|undefined
     _startHex = '';

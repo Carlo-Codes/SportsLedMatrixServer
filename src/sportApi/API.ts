@@ -1,9 +1,6 @@
 import fs from 'fs/promises'
+import fetch from 'node-fetch'
 
-export interface IAPIData{
-    i:number,
-    data:object
-}
 
 function sleep(ms:number) {
     return new Promise((resolve) => {
@@ -12,49 +9,29 @@ function sleep(ms:number) {
   }
 
 export class APIdata {
-
+    _url = ''
     _savePath = ''
-    _data:IAPIData[] = [];
-
+    _data:SportsApiResponse;
+    _fetchOptions = {}
 
     constructor(){
 
     }
 
-    async init(savePath:string){
+    async init(url:string, savePath:string, fetchOptions:object){
+        this._url = url
         this._savePath = savePath;
-        await this.readFileFromServer()
+        this._fetchOptions = fetchOptions
     }
 
-    async fetchAndAdd(url:string, i:number){
+    async fetch(){
         try {
-            const res = await fetch(url)
-            const response = await res.json() as object
-            this._data = this._data.concat(
-                {
-                    i:i,
-                    data:response
-                }
-            )
-            await sleep(100)
-        } catch (err:unknown) {
-            if(err instanceof Error){
-                console.log(err)
-            }
-        }
-         
-    }
-
-    async fetch(url:string){
-        try {
-            const res = await fetch(url);
-            const response = await res.json() as object
-            this._data = [
-                {
-                    i:0,
-                    data:response
-                }
-            ]
+            const res = await fetch(this._url,this._fetchOptions);
+            const response = await res.json()
+            this._data = response
+            this.saveDataToFile()
+            
+            
         } catch (err:unknown) {
             if(err instanceof Error){
                 console.log(err)
@@ -81,11 +58,15 @@ export class APIdata {
         try {
           const data = await fs.readFile(this._savePath, {encoding:"utf-8"})
           const json = await JSON.parse(data)
-          this._data =  json as IAPIData[]
+          this._data =  json as SportsApiResponse
           } catch (error:unknown) {
             if(error instanceof Error){
               console.log(error)
             }
           }
       }
+
+    async update(){
+        await this.update();
+    }
 }
