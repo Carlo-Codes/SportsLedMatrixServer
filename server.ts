@@ -2,10 +2,8 @@
 import express, { Response, Request } from 'express';
 import * as path from 'path';
 import bodyParser from 'body-parser';
-import {stringToHex} from './utils/utils'
-import net from 'net'
+import { LEDmatrix } from './src/ledMatrix/ledMartix';
 import { FootballApi } from './src/sportApi/footballApi';
-
 
 const port = 3000;
 
@@ -15,25 +13,19 @@ const displayboard = {
 };
 
 
-const testdata = '61616161';
-
 
 async function initMatrix(){
-  let football = new FootballApi();
-  await football.init().then(()=>{
-    console.log(football.getFormattedResults())
+  const matrix = new LEDmatrix()
+  matrix.connectToMatrix()
+  matrix.addApi(new FootballApi)
+  await matrix.init(displayboard).then(()=>{
+    matrix.parseData();
+    matrix.sendData();
   })
+  
 }
 
-/* 
-const tcpClient = net.createConnection(displayboard.port, displayboard.host)
-tcpClient.on('connect',()=>{
-  console.log('connected to display')
-})
-//tcpClient.write(rawHex)
-tcpClient.on('error', ()=>{
-  console.log('error')
-}) */
+
 
 const app = express();
 
