@@ -17,9 +17,13 @@ const displayboard = {
 
 const testdata = '61616161';
 
-let football = new FootballApi();
-football.init();
 
+async function initMatrix(){
+  let football = new FootballApi();
+  await football.init().then(()=>{
+    console.log(football.getFormattedResults())
+  })
+}
 
 /* 
 const tcpClient = net.createConnection(displayboard.port, displayboard.host)
@@ -45,6 +49,7 @@ app.use(function (req: Request, res: Response, next: Function) {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+  initMatrix();
 
 });
 

@@ -1,4 +1,4 @@
-type League = {
+export type League = {
     league: {
         id: number;
         name: string;
@@ -34,7 +34,7 @@ type League = {
     }[];
 };
 
-type Fixture = {
+export type Fixture = {
     fixture: {
         id: number;
         referee: string;
@@ -103,7 +103,7 @@ type Fixture = {
     };
 };
 
-type SportsApiResponse = {
+export type SportsApiResponse = {
     get: string;
     parameters: {
         league?: string;

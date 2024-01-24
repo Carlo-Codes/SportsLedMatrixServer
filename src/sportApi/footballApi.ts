@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import { APIdata } from './API';
-
+import { League, Fixture, SportsApiResponse } from './@types/SpotsAPi';
 
 
 export class FootballApi{
@@ -79,7 +79,7 @@ export class FootballApi{
 
   formatFixture(fixture:Fixture){// here
     const homeTeam = fixture.teams.home.name
-    const awayTeam = fixture.teams.away
+    const awayTeam = fixture.teams.away.name
     const homeScore = fixture.goals.home
     const awayScore = fixture.goals.away
     const fixtureText = homeTeam + " " + homeScore + " - " + awayScore + " " + awayTeam
@@ -88,15 +88,23 @@ export class FootballApi{
 
   getFormattedResults(){
     let response:string[] = []
-    const liveData = this._premLiveFixturesData._data.response as Fixture[]
-    const last10Data = this._premLastTenFixturesData._data.response as Fixture[]
+
+    const liveData = this._premLiveFixturesData._data
+    const last10Data = this._premLastTenFixturesData._data
+
     if(liveData){
-      for(let i =0; i < liveData.length; i++){
-        response.push(this.formatFixture(liveData[i]))
-      }
-    }else{
-      for(let i = 0; i < last10Data.length; i++){
-        response.push(this.formatFixture(last10Data[i]))
+      const liveFixtures = liveData.response as Fixture[]
+      if(liveFixtures){
+        for(let i =0; i < liveFixtures.length; i++){
+          response.push(this.formatFixture(liveFixtures[i]))
+        }
+    }
+    }
+    
+    if(last10Data){
+      const last10Fixtures = last10Data?.response as Fixture[]
+      for(let i = 0; i < last10Fixtures.length; i++){
+        response.push(this.formatFixture(last10Fixtures[i]))
       }
     }
     return response

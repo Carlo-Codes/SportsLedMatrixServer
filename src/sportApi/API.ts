@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import fetch from 'node-fetch'
-
+import { SportsApiResponse } from './@types/SpotsAPi';
 
 function sleep(ms:number) {
     return new Promise((resolve) => {
@@ -11,7 +11,7 @@ function sleep(ms:number) {
 export class APIdata {
     _url = ''
     _savePath = ''
-    _data:SportsApiResponse;
+    _data:SportsApiResponse|undefined;
     _fetchOptions = {}
 
     constructor(){
