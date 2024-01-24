@@ -8,15 +8,15 @@ import { FootballApi } from './src/sportApi/footballApi';
 const port = 3000;
 
 const displayboard = {
-  host: '192.168.1.134',
-  port: 9520
+  host: 'localhost',
+  port: 64200 //9520
 };
 
 
 
 async function initMatrix(){
   const matrix = new LEDmatrix()
-  matrix.connectToMatrix()
+  await matrix.connectToMatrix().then
   matrix.addApi(new FootballApi)
   await matrix.init(displayboard).then(()=>{
     matrix.parseData();

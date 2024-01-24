@@ -14,7 +14,6 @@ export class LEDmatrix{
     _ipPort:number = 0;
     _matrixSocket:net.Socket|undefined
 
-
     constructor(){
 
     }
@@ -22,6 +21,9 @@ export class LEDmatrix{
     async init(IPinfo:displayboardIP){
         this._ipHost = IPinfo.host
         this._ipPort = IPinfo.port
+        this._matrixSocket = net.createConnection(this._ipPort, this._ipHost,()=>{
+            console.log('connected')
+        })
         this._parser.init();
         await this._api?.init();
     }
@@ -43,7 +45,6 @@ export class LEDmatrix{
             }
             this._parser.ParseText(concatString)
         }
-
     }
 
     sendData(){
@@ -54,12 +55,14 @@ export class LEDmatrix{
     }
 
     async connectToMatrix(){
-        this._matrixSocket = net.createConnection(this._ipPort, this._ipHost)
-        this._matrixSocket.on('connect',()=>{
-        console.log('connected to display')
-        })
-        this._matrixSocket.on('error', ()=>{
-        console.log('error')
-        }) 
+        if(this._matrixSocket){
+            this._matrixSocket.on('connect',()=>{
+            console.log('connected to display')
+                })
+            this._matrixSocket.on('error', ()=>{
+            console.log('error')
+            }) 
+        
+        }
     }
 }
