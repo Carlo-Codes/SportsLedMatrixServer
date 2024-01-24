@@ -5,10 +5,16 @@ export interface IAPIData{
     data:object
 }
 
+function sleep(ms:number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms)
+    });
+  }
+
 export class APIdata {
 
     _savePath = ''
-    _data:IAPIData[];
+    _data:IAPIData[] = [];
 
 
     constructor(){
@@ -17,6 +23,7 @@ export class APIdata {
 
     async init(savePath:string){
         this._savePath = savePath;
+        await this.readFileFromServer()
     }
 
     async fetchAndAdd(url:string, i:number){
@@ -29,6 +36,7 @@ export class APIdata {
                     data:response
                 }
             )
+            await sleep(100)
         } catch (err:unknown) {
             if(err instanceof Error){
                 console.log(err)

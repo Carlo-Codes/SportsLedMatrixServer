@@ -1,4 +1,5 @@
 import fs from 'fs/promises'
+import { APIdata } from './API';
 
 interface match extends Object{
   strStatus:string
@@ -14,21 +15,18 @@ matchWeek:number,
 matches:match[]
 }
 
-function sleep(ms:number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  });
-}
+
 
 export class FootballApi{
+
+  data = new APIdata()
+  apiKey = '3'
   matchWeeks = 38;
   season = '2023-2024' //change this progromatically for production
   date = Date.now() //in miliseconds
-  allMatches:MatchWeekMatches[]|undefined;
   allMatchesFilePath = `allMatchesPerMatchWeek${this.season}.json`
   currentMatchWeek = 0
-
-  nextMatch:match|undefined;
+  matches:match[] =[]
 
   constructor(){
 
@@ -36,12 +34,11 @@ export class FootballApi{
 
   async init(){
     try {
-      await this.readMatchesFromServer().then((resolve)=>{
-        this.update()
+      await this.data.init(this.allMatchesFilePath).then((resolve)=>{
         this.setMatchWeek(21)//get this from api
       })
-      if(!this.allMatches){
-        await this.getAndSaveMatchesToServer()
+      if(!this.data._data){
+        await this.getMatchesByMatchWeek()
       }
     } catch (error:unknown) {
       if(error instanceof Error){
@@ -54,14 +51,7 @@ export class FootballApi{
   private async getMatchesByMatchWeek(){
     try {
       for (let i = 1; i <= this.matchWeeks; i++){
-        const res = await fetch(`https://www.thesportsdb.com/api/v1/json/3/eventsround.php?id=4328&r=${i}&s=${this.season}`)
-        const response = await res.json() as matchesByMatchWeek
-        await sleep(100)
-        const matchWeek:MatchWeekMatches = {
-          matchWeek:i,
-          matches:response.events as match[],
-        }
-        this.allMatches = this.allMatches?.concat(matchWeek)
+        this.data.fetchAndAdd(`https://www.thesportsdb.com/api/v1/json/${this.apiKey}/eventsround.php?id=4328&r=${i}&s=${this.season}`, i)
     }
   
     } catch (error:unknown) {
@@ -71,43 +61,12 @@ export class FootballApi{
     }
   }
   
-  private async saveMatchesToFile(){
-  
-    try {
-      const dataString = JSON.stringify(this.allMatches);
-      await fs.writeFile(this.allMatchesFilePath, dataString , 'utf-8')
-    }
-     catch (error:unknown) {
-      if(error instanceof Error){
-        console.log(error)
-      }
-    }
-  
-  }
-  
-  async getAndSaveMatchesToServer(callback:()=>void = ()=>{null}){
-    await this.getMatchesByMatchWeek();
-    await this.saveMatchesToFile();
-    callback
-  }
-  
-  async readMatchesFromServer(){
-    try {
-      const data = await fs.readFile(this.allMatchesFilePath, {encoding:"utf-8"})
-      const json = await JSON.parse(data)
-      this.allMatches =  json as MatchWeekMatches[]
-      } catch (error:unknown) {
-        if(error instanceof Error){
-          console.log(error)
-        }
-      }
-  }
 
 
   setMatchWeek(weekN: number){
     this.currentMatchWeek = weekN;
   }
-  calculateCurrentGameWeek(){ //this is POINTLESS!!! just pay for api
+/*   calculateCurrentGameWeek(){ //this is POINTLESS!!! just pay for api
     if(this.allMatches){
       for(let i = 0; i < this.allMatches?.length; i++){ //"strStatus": "Not Started"
         for(let j = 0; j < this.allMatches[i].matches.length; j++){
@@ -129,20 +88,20 @@ export class FootballApi{
       }  
     }
     console.log(this.nextMatch)
-  }
+  } */
 
   getCurrentWeekMatches(){
-    const matches = this.allMatches?.filter((week)=>{
+    const data = this.data._data as unknown as MatchWeekMatches[]
+    const matches = data.filter((week)=>{
       week.matchWeek === this.currentMatchWeek
     })[0]
-
-
+    this.matches = matches.matches
   }
 
   formatResults(week:match){// here
-    const homeTeam
+/*     const homeTeam
     const awayTeam
-    const score
+    const score */
   }
 
   update(){

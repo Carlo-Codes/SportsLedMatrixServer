@@ -21,15 +21,15 @@ let football = new FootballApi();
 football.init();
 
 
-
+/* 
 const tcpClient = net.createConnection(displayboard.port, displayboard.host)
 tcpClient.on('connect',()=>{
   console.log('connected to display')
 })
-
+//tcpClient.write(rawHex)
 tcpClient.on('error', ()=>{
   console.log('error')
-})
+}) */
 
 const app = express();
 
@@ -55,7 +55,5 @@ app.get('/', (req, res) => {
 app.post('/sendText', (req, res) => {
   const text = req.body as string;
 
-  console.log(rawHex)
-  tcpClient.write(rawHex)
   res.status(200).send('Data received successfully');
 });
