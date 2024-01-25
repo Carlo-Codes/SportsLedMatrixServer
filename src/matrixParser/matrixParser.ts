@@ -6,8 +6,9 @@ export class MatrixParser{
     constructor(){
 
     }
+    
 
-    init(startHex = `015A303002410F45544141060A49310A4F31`, endHex = '04'){
+    init(startHex = `015A303002410F45544141060A49340A4F331A33`, endHex = '04'){
         this._startHex = startHex;
         this._endHex = endHex;
     }
@@ -26,7 +27,6 @@ export class MatrixParser{
         const textToHex = this.stringToHex(string)
         const combinedHex = this._startHex + textToHex + this._endHex
         this._hexToSend = Buffer.from(combinedHex, 'hex')
-        return this._hexToSend
     }
 
     public set startHex(string:string){

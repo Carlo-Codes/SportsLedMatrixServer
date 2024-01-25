@@ -8,19 +8,21 @@ import { FootballApi } from './src/sportApi/footballApi';
 const port = 3000;
 
 const displayboard = {
-  host: 'localhost',
-  port: 64200 //9520
+  host: '192.168.1.28',
+  port: 9520
 };
 
 
+const matrix = new LEDmatrix()
 
 async function initMatrix(){
-  const matrix = new LEDmatrix()
-  await matrix.connectToMatrix().then
   matrix.addApi(new FootballApi)
-  await matrix.init(displayboard).then(()=>{
-    matrix.parseData();
-    matrix.sendData();
+  await matrix.init(displayboard).then(async()=>{
+    await matrix.connectToMatrix().then(()=>{
+      matrix.parseAPIData();
+      matrix.sendData();
+
+    })
   })
   
 }
@@ -51,6 +53,7 @@ app.get('/', (req, res) => {
 
 app.post('/sendText', (req, res) => {
   const text = req.body as string;
-
+  matrix._parser.ParseText(text)
+  matrix.sendData()
   res.status(200).send('Data received successfully');
 });
