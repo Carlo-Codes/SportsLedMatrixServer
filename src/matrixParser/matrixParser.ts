@@ -8,7 +8,7 @@ export class MatrixParser{
     }
     
 
-    init(startHex = `015A303002410F45544141060A49340A4F331A33`, endHex = '04'){
+    init(startHex = `015A303002410F45544141061C32`, endHex = '04'){
         this._startHex = startHex;
         this._endHex = endHex;
     }
