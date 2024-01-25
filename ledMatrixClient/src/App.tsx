@@ -10,7 +10,7 @@ function App() {
   }
 
   async function SendData() {
-    const res = await fetch('http://192.168.1.250/sendText', {
+    const res = await fetch('http://192.168.1.250:3000/sendText', {
         method: 'POST',
         body: textToSend
     });
