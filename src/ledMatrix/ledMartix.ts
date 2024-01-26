@@ -29,7 +29,7 @@ export class LEDmatrix{
         })
 
         this._matrixSocket.on('error', ()=>{
-
+            console.log('Conneciton to Matrix Error')
         })
 
         this._parser.init();
@@ -49,7 +49,7 @@ export class LEDmatrix{
             let concatString = ''
             const results = this._api?.getFormattedResults()
             for(let i = 0; i < results?.length; i++){
-                concatString = concatString.concat(results[i] + "     ")
+                concatString = concatString.concat(results[i] + "\n\n")
             }
             this._parser.ParseText(concatString)
         }
