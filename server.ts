@@ -55,5 +55,6 @@ app.post('/sendText', (req, res) => {
   const text = req.body as string;
   matrix._parser.ParseText(text)
   matrix.sendData()
+  console.log(req.ip)
   res.status(200).send('Data received successfully');
 });
