@@ -15,7 +15,7 @@ export class Networking{
 
 
     constructor(){
-        this.arpScan = spawn('sudo', [this.arpScanCommand, ...this.arpScanArgs])
+        this.arpScan = spawn(this.arpScanCommand, [...this.arpScanArgs])
 
         this.arpScan.stdout.on('data', (data:string) => {
             console.log(`stdout: ${data}`);
