@@ -4,7 +4,7 @@ import * as path from 'path';
 import bodyParser from 'body-parser';
 import { LEDmatrix } from './src/ledMatrix/ledMartix';
 import { FootballApi } from './src/sportApi/footballApi';
-
+import { Networking } from './src/networking/networking';
 const port = 3000;
 
 const displayboard = {
@@ -40,8 +40,8 @@ app.use(function (req: Request, res: Response, next: Function) {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
-  initMatrix();
-
+  //initMatrix();
+  const networking = new Networking()
 });
 
 app.get('/', (req, res) => {

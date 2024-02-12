@@ -1,6 +1,7 @@
 import { FootballApi } from "../sportApi/footballApi";
 import {MatrixParser} from '../matrixParser/matrixParser'
 import net from 'net'
+import { Networking } from "../networking/networking";
 
 export interface displayboardIP {
     host: string,
@@ -13,6 +14,7 @@ export class LEDmatrix{
     _ipHost:string = '';
     _ipPort:number = 0;
     _matrixSocket:net.Socket|undefined
+    _networking:Networking = new Networking()
 
     constructor(){
 
@@ -22,6 +24,7 @@ export class LEDmatrix{
         this._ipHost = IPinfo.host
         this._ipPort = IPinfo.port
         this._matrixSocket = net.createConnection(IPinfo.port, IPinfo.host)
+        //this._networking:Networking
 
         this._matrixSocket.on('connect',()=>{
             console.log('connected to display')
