@@ -10,7 +10,7 @@ export interface displayboardIP {
 
 export class LEDmatrix{
     _api:FootballApi|undefined//or basket ball etc 
-    _parser:MatrixParser = new MatrixParser();
+    _parser:MatrixParser = new MatrixParser(); 
     _ipHost:string = '';
     _ipPort:number = 0;
     _matrixSocket:net.Socket|undefined
