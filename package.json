@@ -23,6 +23,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.ts",
+    "docker:dev": "docker-compose up --build --no-recreate -d",
     "tcptest": "ts-node tcpTestServer.ts"
   },
   "author": "",
