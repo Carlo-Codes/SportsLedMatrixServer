@@ -9,22 +9,34 @@ export class Networking{
     ipAddress:string|undefined = ''
     networkInterfaces:object = {}
     arpScan:ChildProcessWithoutNullStreams
-    arpScanCommand = 'arp-scan';
-    arpScanArgs = ['192.168.1.0/24'];
+    arpScanCommand = 'sudo';
+    arpScanArgs = ['arp-scan', '192.168.1.0/24']
     scannedIps:arpScanRes[] = []
 
 
     constructor(){
         this.arpScan = spawn(this.arpScanCommand, [...this.arpScanArgs])
 
-        this.arpScan.stdout.on('data', (data:string) => {
+        this.arpScan.stdout.on('data', (data:Buffer) => {
+          const converted = data.toString();
             console.log(`stdout: ${data}`);
-            const parsedData = data.split('\t')
-            const scannedIp:arpScanRes = {
-              ip:parsedData[0],
-              mac:parsedData[1]
-            }
-            this.scannedIps.push(scannedIp)
+            const datalines = converted.split('\n')
+            for(let i = 0; i < datalines.length; i++){
+              if(i === 0 || i === 1 ||i === datalines.length){
+                continue
+              }else {
+                const values = datalines[i].split('\t')
+                
+                  const scannedIp:arpScanRes = {
+                    ip:values[0], 
+                    mac:values[1]
+                  }
+                  
+                  this.scannedIps.push(scannedIp)
+                
+              }
+            } 
+
 
           });
           
@@ -37,6 +49,8 @@ export class Networking{
           }); 
             
     }
+
+  
 
 
     

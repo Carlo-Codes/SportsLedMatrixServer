@@ -1,3 +1,8 @@
 {
-    "ignore": ["*.json"]
-}
+    "verbose": true,
+    "ignore": ["node_modules"],
+    "watch": ["**.ts"],
+    "execMap": {
+      "ts": "node --inspect=0.0.0.0:9229 --nolazy -r ts-node/register"
+    }
+  } 
