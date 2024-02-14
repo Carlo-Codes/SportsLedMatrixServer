@@ -1,4 +1,5 @@
-import { spawn, ChildProcessWithoutNullStreams } from "child_process"
+import { spawn, ChildProcess, exec } from "child_process"
+import { error } from "console"
 
 interface arpScanRes{
   ip:string,
@@ -8,23 +9,23 @@ interface arpScanRes{
 export class Networking{
     ipAddress:string|undefined = ''
     networkInterfaces:object = {}
-    arpScan:ChildProcessWithoutNullStreams
+    arpScan:ChildProcess | undefined
     arpScanCommand = 'sudo';
-    arpScanArgs = ['arp-scan', '192.168.1.0/24']
-    scannedIps:arpScanRes[] = []
+    arpScanArgs = ['arp-scan', '192.168.1.0/24', '--plain']
+    scannedIps:arpScanRes[] = [] 
 
 
-    constructor(){
-        this.arpScan = spawn(this.arpScanCommand, [...this.arpScanArgs])
 
-        this.arpScan.stdout.on('data', (data:Buffer) => {
-          const converted = data.toString();
-            console.log(`stdout: ${data}`);
-            const datalines = converted.split('\n')
+    async init(){
+      const result = await new Promise((resolve, reject)=>{
+        this.arpScan = exec(this.arpScanCommand + " " + this.arpScanArgs[0] + " " + this.arpScanArgs[1] + " " + this.arpScanArgs[2],(error, stdout, stderr)=>{
+          if (error) {
+            console.error(`exec error: ${error}`);
+            reject(error)
+            return;
+          }
+          const datalines = stdout.split('\n')
             for(let i = 0; i < datalines.length; i++){
-              if(i === 0 || i === 1 ||i === datalines.length){
-                continue
-              }else {
                 const values = datalines[i].split('\t')
                 
                   const scannedIp:arpScanRes = {
@@ -33,21 +34,14 @@ export class Networking{
                   }
                   
                   this.scannedIps.push(scannedIp)
-                
-              }
-            } 
-
-
-          });
+                } 
+              
           
-          this.arpScan.stderr.on('data', (data) => {
-            console.error(`stderr: ${data}`);
-          });
-          
-          this.arpScan.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-          }); 
-            
+          console.error(`stderr: ${stderr}`);
+
+          resolve(stdout)
+        })
+      })
     }
 
   

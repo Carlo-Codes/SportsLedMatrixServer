@@ -14,7 +14,7 @@ const displayboard = {
 
 
 const matrix = new LEDmatrix()
-
+const networking = new Networking()
 async function initMatrix(){
   matrix.addApi(new FootballApi)
   await matrix.init(displayboard).then(async()=>{
@@ -37,11 +37,13 @@ app.use(function (req: Request, res: Response, next: Function) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
+  
+app.listen(port, async () => {
+  console.log(`Example app listening on port ${port}`); 
+  //initMatrix(); 
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-  //initMatrix();
-  const networking = new Networking()
+  await networking.init();
+  console.log(networking.scannedIps)
 });
 
 app.get('/', (req, res) => {
