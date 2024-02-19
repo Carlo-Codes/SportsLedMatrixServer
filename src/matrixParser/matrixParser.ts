@@ -3,12 +3,14 @@ export class MatrixParser{
     _hexToSend:Buffer|undefined
     _startHex = '';
     _endHex = '';
+    _newLineHex = '0D'
+    _linesToParse:string []= []
     constructor(){
 
     }
     
 
-    init(startHex = `015A303002410F45544141061C32`, endHex = '04'){
+    init(startHex = `015A303002410F45544141060A49310A4F311C321A340E3230303030`, endHex = '04'){
         this._startHex = startHex;
         this._endHex = endHex;
     }
@@ -26,6 +28,18 @@ export class MatrixParser{
         this._textToParse = string
         const textToHex = this.stringToHex(string)
         const combinedHex = this._startHex + textToHex + this._endHex
+        this._hexToSend = Buffer.from(combinedHex, 'hex')
+    }
+
+    public ParseLines(lines:string[]){
+        this._linesToParse = lines
+        let combinedHex:string = ''
+        for(let i = 0; i < lines.length; i++){
+            const lineHex = this.stringToHex(lines[i])
+            const combinedLine = lineHex + this._newLineHex
+            combinedHex+=combinedLine;
+        }
+        combinedHex = this._startHex + combinedHex + this._endHex
         this._hexToSend = Buffer.from(combinedHex, 'hex')
     }
 

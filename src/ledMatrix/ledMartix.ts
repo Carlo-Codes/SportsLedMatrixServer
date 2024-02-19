@@ -44,23 +44,20 @@ export class LEDmatrix{
     }
 
     update(){
-        this._api?.update();
+        this._api?.update(); 
     }
 
     parseAPIData(){
         if(this._api){
             let concatString = ''
             const results = this._api?.getFormattedResults()
-            for(let i = 0; i < results?.length; i++){
-                concatString = concatString.concat(results[i] + "\n\n")
-            }
-            this._parser.ParseText(concatString)
+            this._parser.ParseLines(results)
         }
     }
 
     sendData(){
         if(this._parser._hexToSend){
-            console.log(this._parser._textToParse)
+            console.log(this._parser._linesToParse)
     
             this._matrixSocket?.write(this._parser._hexToSend)
             
