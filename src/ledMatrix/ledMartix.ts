@@ -3,15 +3,15 @@ import {MatrixParser} from '../matrixParser/matrixParser'
 import net from 'net'
 import { Networking } from "../networking/networking";
 
-export interface displayboardIP {
-    host: string,
+export interface displayBoardInfo {
+    mac: string,
     port: number
   };
 
 export class LEDmatrix{
     _api:FootballApi|undefined//or basket ball etc 
     _parser:MatrixParser = new MatrixParser(); 
-    _ipHost:string = '';
+    _ipHost:string|undefined = '';
     _ipPort:number = 0;
     _matrixSocket:net.Socket|undefined
     _networking:Networking = new Networking()
@@ -20,11 +20,11 @@ export class LEDmatrix{
 
     }
 
-    async init(IPinfo:displayboardIP){
-        this._ipHost = IPinfo.host
-        this._ipPort = IPinfo.port
-        this._matrixSocket = net.createConnection(IPinfo.port, IPinfo.host)
-        //this._networking:Networking
+    async init(info:displayBoardInfo){
+        await this._networking.init();
+        this._ipHost = this._networking.getIpfromMac(info.mac)
+        this._ipPort = info.port
+        this._matrixSocket = net.createConnection(this._ipPort, this._ipHost)
 
         this._matrixSocket.on('connect',()=>{
             console.log('connected to display')

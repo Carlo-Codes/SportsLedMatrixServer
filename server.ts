@@ -5,19 +5,19 @@ import bodyParser from 'body-parser';
 import { LEDmatrix } from './src/ledMatrix/ledMartix';
 import { FootballApi } from './src/sportApi/footballApi';
 import { Networking } from './src/networking/networking';
+import {displayBoardInfo} from './src/ledMatrix/ledMartix'
 const port = 3000;
 
-const displayboard = {
-  host: '192.168.1.187',
+const displayboard1:displayBoardInfo = {
+  mac: '00:1D:6F:01:D6:03',
   port: 9520
 };
 
 
 const matrix = new LEDmatrix()
-const networking = new Networking()
 async function initMatrix(){
   matrix.addApi(new FootballApi)
-  await matrix.init(displayboard).then(async()=>{
+  await matrix.init(displayboard1).then(async()=>{
       matrix.parseAPIData();
       matrix.sendData();
    })
@@ -40,10 +40,8 @@ app.use(function (req: Request, res: Response, next: Function) {
   
 app.listen(port, async () => {
   console.log(`Example app listening on port ${port}`); 
-  //initMatrix(); 
+  initMatrix(); 
 
-  await networking.init();
-  console.log(networking.scannedIps)
 });
 
 app.get('/', (req, res) => {

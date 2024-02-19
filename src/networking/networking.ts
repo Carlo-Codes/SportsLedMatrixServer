@@ -45,6 +45,25 @@ export class Networking{
     }
 
   
+    getIpfromMac(mac:string){
+      try {
+        const ip =  this.scannedIps.filter((obj)=>{
+          if(!obj.mac) {return false}
+          const scannedMac = obj.mac.toLowerCase();
+          const comparisonMac = mac.toLowerCase();
+          if(scannedMac === comparisonMac){
+            return obj
+          } 
+        })[0].ip
+  
+        return ip
+      } catch (Error) {
+        console.log(Error)
+      }
+
+    }
+
+  
 
 
     
