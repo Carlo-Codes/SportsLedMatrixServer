@@ -57,7 +57,7 @@ export class LEDmatrix{
 
     sendData(){
         if(this._parser._hexToSend){
-            console.log(this._parser._linesToParse)
+            console.log(this._parser._textToParse)
     
             this._matrixSocket?.write(this._parser._hexToSend)
             

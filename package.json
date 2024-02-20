@@ -1,32 +1,64 @@
 {
 
   "dependencies": {
+
     "cors": "^2.8.5",
+
     "pm2": "^5.3.0",
+
     "react": "^18.2.0",
-    "typescript": "^5.3.3"
+
+    "typescript": "^5.3.3",
+
+    "ws": "^8.16.0"
+
   },
+
   "devDependencies": {
+
     "@types/cors": "^2.8.17",
+
     "@types/express": "^4.17.21",
+
     "@types/node": "^20.11.4",
+
     "@types/node-fetch": "^2.6.11",
+
     "@types/react": "^18.2.48",
+
+    "@types/ws": "^8.5.10",
+
     "express": "^4.18.2",
+
     "node-fetch": "^2.7.0",
+
     "nodemon": "^3.0.2",
+
     "ts-node": "^10.9.2"
+
   },
+
   "name": "autonodeservertest",
+
   "version": "1.0.0",
+
   "main": "server.ts",
+
   "scripts": {
+
     "test": "echo \"Error: no test specified\" && exit 1",
+
     "start": "nodemon -L server.ts",
 
     "tcptest": "ts-node tcpTestServer.ts"
+
   },
+
   "author": "",
+
   "license": "ISC",
+
   "description": ""
+
 }
+

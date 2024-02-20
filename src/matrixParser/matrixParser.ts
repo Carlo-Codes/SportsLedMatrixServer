@@ -4,7 +4,7 @@ export class MatrixParser{
     _startHex = '';
     _endHex = '';
     _newLineHex = '0D'
-    _linesToParse:string []= []
+
     constructor(){
 
     }
@@ -32,12 +32,13 @@ export class MatrixParser{
     }
 
     public ParseLines(lines:string[]){
-        this._linesToParse = lines
         let combinedHex:string = ''
         for(let i = 0; i < lines.length; i++){
             const lineHex = this.stringToHex(lines[i])
             const combinedLine = lineHex + this._newLineHex
             combinedHex+=combinedLine;
+
+            this._textToParse+= lines[i] + '\n'
         }
         combinedHex = this._startHex + combinedHex + this._endHex
         this._hexToSend = Buffer.from(combinedHex, 'hex')
