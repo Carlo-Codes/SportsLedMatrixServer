@@ -3,6 +3,10 @@ import {MatrixParser} from '../matrixParser/matrixParser'
 import net from 'net'
 import { Networking } from "../networking/networking";
 import { resolve } from "path";
+import express from 'express';
+import webSocket from 'ws'
+import { Server, IncomingMessage, ServerResponse } from 'http';
+
 
 export interface displayBoardInfo {
     mac: string,
@@ -12,12 +16,12 @@ export interface displayBoardInfo {
 export class LEDmatrix{
     _api:FootballApi|undefined//or basket ball etc 
     _parser:MatrixParser = new MatrixParser(); 
-    _ipHost:string|undefined = '';
-    _ipPort:number = 0;
+    private _ipHost:string|undefined = '';
+    private _ipPort:number = 0;
     _matrixSocket:net.Socket|undefined
     _networking:Networking = new Networking()
-    _updateLoopTime = 1200000 //20 minutes to allow for free tier
-    _apiUpdateLoop:NodeJS.Timeout|undefined
+    private _updateLoopTime = 1200000 //20 minutes to allow for free tier
+    private _apiUpdateLoop:NodeJS.Timeout|undefined
 
     constructor(){
 
@@ -27,6 +31,7 @@ export class LEDmatrix{
         await this._networking.init();
         this._ipHost = this._networking.getIpfromMac(info.mac)
         this._ipPort = info.port
+
         this._matrixSocket = net.createConnection(this._ipPort, this._ipHost)
 
         this._matrixSocket.on('connect',()=>{
@@ -82,4 +87,5 @@ export class LEDmatrix{
         clearInterval(this._apiUpdateLoop)
     }
 
+   
 }

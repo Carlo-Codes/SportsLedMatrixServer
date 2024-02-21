@@ -9,20 +9,8 @@ import webSocket from 'ws'
 import { Server, IncomingMessage, ServerResponse } from 'http';
 
 
-function matrixRouteBuilder(matrix:LEDmatrix, server: Server<typeof IncomingMessage, typeof ServerResponse>, wsPath:string){
+function matrixRouteBuilder(matrix:LEDmatrix, server: Server<typeof IncomingMessage, typeof ServerResponse>, wsServer:webSocket.Server, route:string){
     const router = express.Router()
-
-    const wsServer = new webSocket.Server({server, path:wsPath})
-
-    wsServer.on('connection', (ws:webSocket,req) =>{
-      console.log("connect to: " + req.socket.remoteAddress)
-
-      ws.on('close', ()=>{
-        console.log(req.socket.remoteAddress + " Closed the connection")
-      })
-    })
-
-
     router.post('/sendText', (req, res) => {
         try {
           const text = req.body as string;

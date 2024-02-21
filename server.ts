@@ -34,21 +34,39 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
+
+
 const displayboard1:displayBoardInfo = {
   mac: '00:1D:6F:01:D6:03',
-  port: 9520
+  port: 9520,
 };
 
 const matrix1 = new LEDmatrix()
-
+const matrix2 = new LEDmatrix()
 async function initMatrixes(){
   await matrix1.init(displayboard1)
+  await matrix2.init(displayboard1)
 }
+
+
+const wsServer = new webSocket.Server({server})
+
+wsServer.on('connection', (ws:webSocket,req) =>{
+  console.log("connect to: " + req.socket.remoteAddress)
+
+  ws.on('close', ()=>{
+    console.log(req.socket.remoteAddress + " Closed the connection")
+  })
+})
 
 initMatrixes()
 
 const matrix1Route = '/matrix1'
-const router1 = matrixRouter(matrix1, server ,matrix1Route)
+const router1 = matrixRouter(matrix1, server, wsServer, matrix1Route)
 app.use(matrix1Route, router1)
+
+const matrix2Route = '/matrix2'
+const router2 = matrixRouter(matrix2, server, wsServer, matrix2Route)
+app.use(matrix2Route, router2)
 
 
