@@ -46,6 +46,11 @@ export class LEDmatrix{
         await this._api.init()
     }
 
+    async removeApi(){
+        this._api = undefined
+        this.stopUpdateLoop();
+    }
+
     async update(){
         await this._api?.update();
         this.parseAPIData(); 

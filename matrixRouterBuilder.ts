@@ -26,8 +26,10 @@ function matrixRouteBuilder(matrix:LEDmatrix, server: Server<typeof IncomingMess
     router.post('/sendText', (req, res) => {
         try {
           const text = req.body as string;
+          matrix.removeApi();
           matrix._parser.ParseText(text)
           matrix.sendData()
+        
           console.log(req.ip)
           wsServer.clients.forEach((client) => {
             if(client.readyState === webSocket.OPEN){
