@@ -33,6 +33,7 @@ export class MatrixParser{
 
     public ParseLines(lines:string[]){
         let combinedHex:string = ''
+        this._textToParse= ''
         for(let i = 0; i < lines.length; i++){
             const lineHex = this.stringToHex(lines[i])
             const combinedLine = lineHex + this._newLineHex

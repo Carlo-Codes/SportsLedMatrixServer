@@ -117,7 +117,7 @@ export class FootballApi{
         this.getSeason();
         this.initSeasonDependentData();
         await this._premLiveFixturesData.fetch();
-        await this._premLastTenFixturesData.fetch();
+        await this._premLastTenFixturesData.fetch(); 
       })
 
     } catch (error:unknown) {

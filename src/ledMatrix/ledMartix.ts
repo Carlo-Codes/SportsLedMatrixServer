@@ -2,6 +2,7 @@ import { FootballApi } from "../sportApi/footballApi";
 import {MatrixParser} from '../matrixParser/matrixParser'
 import net from 'net'
 import { Networking } from "../networking/networking";
+import { resolve } from "path";
 
 export interface displayBoardInfo {
     mac: string,
@@ -15,6 +16,8 @@ export class LEDmatrix{
     _ipPort:number = 0;
     _matrixSocket:net.Socket|undefined
     _networking:Networking = new Networking()
+    _updateLoopTime = 1200000 //20 minutes to allow for free tier
+    _apiUpdateLoop:NodeJS.Timeout|undefined
 
     constructor(){
 
@@ -36,15 +39,17 @@ export class LEDmatrix{
         })
 
         this._parser.init();
-        await this._api?.init();
     }
 
-    addApi(data:FootballApi){ // or basketball etc
+    async addApi(data:FootballApi){ // or basketball etc
         this._api = data
+        await this._api.init()
     }
 
-    update(){
-        this._api?.update(); 
+    async update(){
+        await this._api?.update();
+        this.parseAPIData(); 
+        this.sendData();
     }
 
     parseAPIData(){
@@ -58,16 +63,18 @@ export class LEDmatrix{
     sendData(){
         if(this._parser._hexToSend){
             console.log(this._parser._textToParse)
-    
             this._matrixSocket?.write(this._parser._hexToSend)
-            
         }
     }
 
-    async connectToMatrix(){
-        if(this._matrixSocket){
-
-        
-        }
+    async initUpdateLoop(){
+        this._apiUpdateLoop = setInterval(async()=>{
+            await this.update();
+        }, this._updateLoopTime)
     }
+
+    stopUpdateLoop(){
+        clearInterval(this._apiUpdateLoop)
+    }
+
 }
