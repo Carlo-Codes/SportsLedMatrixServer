@@ -67,10 +67,9 @@ wsServer.on('connection', (ws:webSocket,req) =>{
   for(let i = 0; i < matricies.length; i++){
     if(matricies[i]._routeUrl === req.url){
       matricies[i].attachWebsocket(ws)
+      ws.send(matricies[i]._parser._textToParse)
     }
   }
-
-
 
   ws.on('close', ()=>{
     console.log(req.socket.remoteAddress + " Closed the connection")

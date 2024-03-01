@@ -20,7 +20,7 @@ export class LEDmatrix{
     
     //const server things
     readonly _routeUrl:string
-    _ws:webSocket|undefined
+    _ws:webSocket[] = [] //webSockects - this could be from various browers and ips, we broadcast the status of matrix to all sockets.
 
     //changable data things
     _api:SportsApiBaseClass|undefined
@@ -98,7 +98,13 @@ export class LEDmatrix{
     }
 
     attachWebsocket(ws:webSocket){
-        this._ws = ws
+        this._ws?.push(ws)
+    }
+
+    sendToAllSockets(text:string){
+        for(let i = 0; i < this._ws?.length!; i++){
+            this._ws[i].send(text)
+        }
     }
 
     matrixRouteBuilder(){
@@ -109,7 +115,8 @@ export class LEDmatrix{
                 this.removeApi();
                 this._parser.ParseText(text)
                 this.sendData()
-                this._ws!.send(text)
+                this.sendToAllSockets(text)
+                
                 res.status(200).send('Data received successfully');
             
             } catch (error) {
@@ -121,9 +128,8 @@ export class LEDmatrix{
             await this.addApi(new FootballApi())
             await this.update();
             await this.initUpdateLoop()
+            this.sendToAllSockets(this._parser._textToParse)
           
-            this._ws!.send(this._parser._textToParse)
-
             res.status(200).send('Request received successfully');
         })
         
