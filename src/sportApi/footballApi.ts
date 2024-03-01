@@ -1,10 +1,10 @@
 import fs from 'fs/promises'
 import { APIdata } from './API';
 import { League, Fixture, SportsApiResponse } from './@types/SpotsAPi';
+import { SportsApiBaseClass } from './sportsApiBaseClass';
 
 
-export class FootballApi{
-  _apiSportsURL = 'https://v3.football.api-sports.io/'
+export class FootballApi extends SportsApiBaseClass{
 
   _season = 0 //change this progromatically for production
 
@@ -19,15 +19,6 @@ export class FootballApi{
   _premLastTenFixturesURL = ''
   _premLastTenFixturesData = new APIdata()
   _premLastTenFixturesDataSavePath = ''
-
-
-  apiSportsConfig = {
-    method:'get',
-    headers: {
-        "x-rapidapi-key":"14dbc453cdfea255add81128ba902975",
-        "x-rapidapi-host":"v3.football.api-sports.io"
-    }
-  }
 
  
   initSeasonDependentData(){
@@ -44,7 +35,7 @@ export class FootballApi{
 
 
   constructor(){
-
+    super()
   }
 
   async init(){

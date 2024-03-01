@@ -3,37 +3,47 @@ import {MatrixParser} from '../matrixParser/matrixParser'
 import net from 'net'
 import { Networking } from "../networking/networking";
 import { resolve } from "path";
-import express from 'express';
+import express, { Router } from 'express';
 import webSocket from 'ws'
+import { SportsApiBaseClass } from "../sportApi/sportsApiBaseClass";
 import { Server, IncomingMessage, ServerResponse } from 'http';
+
 
 
 export interface displayBoardInfo {
     mac: string,
-    port: number
+    port: number,
+    apiRoute : string
   };
 
 export class LEDmatrix{
-    _api:FootballApi|undefined//or basket ball etc 
+
+    _wsServer:webSocket.Server
+    _router:Router
+    _routeUrl:string
+
+    _api:SportsApiBaseClass|undefined
     _parser:MatrixParser = new MatrixParser(); 
+
     private _ipHost:string|undefined = '';
     private _ipPort:number = 0;
-    _matrixSocket:net.Socket|undefined
-    _networking:Networking = new Networking()
-    private _updateLoopTime = 1200000 //20 minutes to allow for free tier
+    private _matrixSocket:net.Socket|undefined
+    private _networking:Networking = new Networking()
+    private _updateLoopTime = 1200000 //20 minutes to allow for api free tier
     private _apiUpdateLoop:NodeJS.Timeout|undefined
 
-    constructor(){
-
-    }
-
-    async init(info:displayBoardInfo){
-        await this._networking.init();
+    constructor(wsServer:webSocket.Server, route:string, info:displayBoardInfo){
+        this._wsServer = wsServer
+        this._routeUrl = route
+        this._router = this.matrixRouteBuilder()
         this._ipHost = this._networking.getIpfromMac(info.mac)
         this._ipPort = info.port
 
-        this._matrixSocket = net.createConnection(this._ipPort, this._ipHost)
+    }
 
+    async init(){
+        await this._networking.init();
+        this._matrixSocket = net.createConnection(this._ipPort, this._ipHost)
         this._matrixSocket.on('connect',()=>{
             console.log('connected to display')
             console.log(this._matrixSocket?.remoteAddress)
@@ -46,7 +56,7 @@ export class LEDmatrix{
         this._parser.init();
     }
 
-    async addApi(data:FootballApi){ // or basketball etc
+    async addApi(data:SportsApiBaseClass){ // or basketball etc
         this._api = data
         await this._api.init()
     }
@@ -85,6 +95,44 @@ export class LEDmatrix{
 
     stopUpdateLoop(){
         clearInterval(this._apiUpdateLoop)
+    }
+
+    matrixRouteBuilder(){
+        const router = express.Router()
+        router.post('/sendText', (req, res) => {
+            try {
+              const text = req.body as string;
+              this.removeApi();
+              this._parser.ParseText(text)
+              this.sendData()
+            
+              console.log(req.ip)
+              this._wsServer.clients.forEach((client) => {
+                if(client.readyState === webSocket.OPEN){
+                  client.send(text)
+                }
+              })
+              res.status(200).send('Data received successfully');
+            
+            } catch (error) {
+              console.log(error)
+            }
+        });
+          
+        router.get('/football', async(req,res) => {
+            await this.addApi(new FootballApi())
+            await this.update();
+            await this.initUpdateLoop()
+            this._wsServer.clients.forEach((client) => {
+              if(client.readyState === webSocket.OPEN){
+                client.send(this._parser._textToParse)
+              }
+            })
+    
+            res.status(200).send('Request received successfully');
+        })
+        
+        return router
     }
 
    
