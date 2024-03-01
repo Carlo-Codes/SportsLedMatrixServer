@@ -46,7 +46,7 @@ export class Networking{
 
   
     getIpfromMac(mac:string){
-      try {
+      try { 
         const ip =  this.scannedIps.filter((obj)=>{
           if(!obj.mac) {return false}
           const scannedMac = obj.mac.toLowerCase();

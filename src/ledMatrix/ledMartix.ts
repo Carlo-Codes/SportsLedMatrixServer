@@ -17,32 +17,32 @@ export interface displayBoardInfo {
   };
 
 export class LEDmatrix{
+    
+    //const server things
+    readonly _routeUrl:string
+    _ws:webSocket|undefined
 
-    _wsServer:webSocket.Server
-    _router:Router
-    _routeUrl:string
-
+    //changable data things
     _api:SportsApiBaseClass|undefined
     _parser:MatrixParser = new MatrixParser(); 
 
+    private _mac:string
     private _ipHost:string|undefined = '';
-    private _ipPort:number = 0;
+    private _ipPort:number;
     private _matrixSocket:net.Socket|undefined
     private _networking:Networking = new Networking()
     private _updateLoopTime = 1200000 //20 minutes to allow for api free tier
     private _apiUpdateLoop:NodeJS.Timeout|undefined
 
-    constructor(wsServer:webSocket.Server, route:string, info:displayBoardInfo){
-        this._wsServer = wsServer
-        this._routeUrl = route
-        this._router = this.matrixRouteBuilder()
-        this._ipHost = this._networking.getIpfromMac(info.mac)
+    constructor(info:displayBoardInfo){
+        this._routeUrl = info.apiRoute
+        this._mac = info.mac
         this._ipPort = info.port
-
     }
 
     async init(){
         await this._networking.init();
+        this._ipHost = this._networking.getIpfromMac(this._mac)
         this._matrixSocket = net.createConnection(this._ipPort, this._ipHost)
         this._matrixSocket.on('connect',()=>{
             console.log('connected to display')
@@ -50,7 +50,7 @@ export class LEDmatrix{
         })
 
         this._matrixSocket.on('error', ()=>{
-            console.log('Conneciton to Matrix Error')
+            console.log('Conneciton to Matrix Error ' + this._routeUrl)
         })
 
         this._parser.init();
@@ -97,22 +97,20 @@ export class LEDmatrix{
         clearInterval(this._apiUpdateLoop)
     }
 
+    attachWebsocket(ws:webSocket){
+        this._ws = ws
+    }
+
     matrixRouteBuilder(){
         const router = express.Router()
         router.post('/sendText', (req, res) => {
             try {
-              const text = req.body as string;
-              this.removeApi();
-              this._parser.ParseText(text)
-              this.sendData()
-            
-              console.log(req.ip)
-              this._wsServer.clients.forEach((client) => {
-                if(client.readyState === webSocket.OPEN){
-                  client.send(text)
-                }
-              })
-              res.status(200).send('Data received successfully');
+                const text = req.body as string;
+                this.removeApi();
+                this._parser.ParseText(text)
+                this.sendData()
+                this._ws!.send(text)
+                res.status(200).send('Data received successfully');
             
             } catch (error) {
               console.log(error)
@@ -123,12 +121,9 @@ export class LEDmatrix{
             await this.addApi(new FootballApi())
             await this.update();
             await this.initUpdateLoop()
-            this._wsServer.clients.forEach((client) => {
-              if(client.readyState === webSocket.OPEN){
-                client.send(this._parser._textToParse)
-              }
-            })
-    
+          
+            this._ws!.send(this._parser._textToParse)
+
             res.status(200).send('Request received successfully');
         })
         
