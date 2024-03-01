@@ -72,7 +72,11 @@ wsServer.on('connection', (ws:webSocket,req) =>{
   }
 
   ws.on('close', ()=>{
-    console.log(req.socket.remoteAddress + " Closed the connection")
+    for(let i = 0; i < matricies.length; i++){
+        const matrix_i = matricies[i]._ws.indexOf(ws)
+        matricies[i]._ws.splice(matrix_i, 1)
+      }
+    console.log(req.socket + " Closed the connection")
   })
 })
 
