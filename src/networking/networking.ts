@@ -47,6 +47,9 @@ export class Networking{
   
     getIpfromMac(mac:string){
       try { 
+        if(!mac){
+          throw new Error("No Mac address supplied")
+        }
         const ip =  this.scannedIps.filter((obj)=>{
           if(!obj.mac) {return false}
           const scannedMac = obj.mac.toLowerCase();
@@ -54,9 +57,13 @@ export class Networking{
           if(scannedMac === comparisonMac){
             return obj
           } 
-        })[0].ip
+        })[0]
+
+        if(!ip){
+          throw new Error("No Ip address found for " + mac)
+        }
   
-        return ip
+        return ip.ip
       } catch (Error) {
         console.log(Error)
       }

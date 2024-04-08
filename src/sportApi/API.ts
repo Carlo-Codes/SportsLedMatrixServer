@@ -1,4 +1,4 @@
-import fs from 'fs/promises'
+import * as fs from 'fs/promises'
 import fetch from 'node-fetch'
 import { SportsApiResponse } from './@types/SpotsAPi';
 

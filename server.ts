@@ -1,5 +1,6 @@
 
-import express, { Response, Request } from 'express';
+import  {Response, Request} from 'express';
+import express from 'express'
 import * as path from 'path';
 import bodyParser from 'body-parser';
 import { LEDmatrix } from './src/ledMatrix/ledMartix';
@@ -44,7 +45,7 @@ const displayboard1:displayBoardInfo = {
 
 
 const displayboard2:displayBoardInfo = {
-  mac: '00:1D:6F:01:D6:03',
+  mac: '',
   port: 9520,
   apiRoute:'/matrix2'
 };
